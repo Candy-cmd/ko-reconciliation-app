@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import datetime
 from recon import run_reconciliation
 
+# ✅ This object name "app" is what Vercel looks for
 app = Flask(__name__)
 app.secret_key = "secure_secret_key"
 UPLOAD_FOLDER = tempfile.gettempdir()
@@ -58,8 +59,7 @@ def process():
 def download(folder, filename):
     return send_file(os.path.join(folder, filename), as_attachment=True)
 
-# ✅ This is the correct Flask entry point Vercel uses
-if __name__ != "__main__":
-    app.debug = False
-else:
+# ✅ This ensures Flask runs locally AND is detected by Vercel
+if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

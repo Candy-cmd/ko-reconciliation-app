@@ -2,8 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 import os
 import tempfile
 import pandas as pd
-from recon import run_reconciliation
 from datetime import datetime
+from recon import run_reconciliation
 
 app = Flask(__name__)
 app.secret_key = "secure_secret_key"
@@ -56,6 +56,10 @@ def process():
 def download(folder, filename):
     return send_file(os.path.join(folder, filename), as_attachment=True)
 
-# ✅ Vercel requires this — no app.run()
-def handler(request, *args, **kwargs):
-    return app(request.environ, start_response=lambda *x: None)
+# ✅ This is the correct entry point Vercel looks for
+# It must be named `app` or `handler`
+def handler(event, context):
+    from werkzeug.middleware.dispatcher import DispatcherMiddleware
+    from werkzeug.wrappers import Response
+    return DispatcherMiddleware(app, {"/": app})
+
